@@ -27,4 +27,7 @@ pub fn arrays() !void {
     // array ranges
     const sl = ns[1..2];
     _ = sl;
+
+    const all = ns[1..];
+    _ = all;
 }
