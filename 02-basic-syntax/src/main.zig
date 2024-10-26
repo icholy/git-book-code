@@ -29,5 +29,5 @@ pub fn arrays() !void {
     _ = sl;
 
     const all = ns[1..];
-    _ = all;
+    std.debug.print("All: {any}\n", .{all});
 }
