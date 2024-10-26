@@ -62,4 +62,7 @@ pub fn scopes() !void {
     }
 }
 
-pub fn strings() !void {}
+pub fn strings() !void {
+    const s: []const u8 = "A string";
+    std.debug.print("String: {s}\n", .{s});
+}
