@@ -50,4 +50,14 @@ pub fn arrays() !void {
     std.debug.print("Value: {d}", .{slice[9]});
 }
 
-pub fn scopes() !void {}
+pub fn scopes() !void {
+    // you can use 'break' to return values from labeled blocks.
+    var y: i32 = 123;
+    const x = add_one: {
+        y += 1;
+        break :add_one y;
+    };
+    if (x == 124 and y == 124) {
+        std.debug.print("Hello\n", .{});
+    }
+}
