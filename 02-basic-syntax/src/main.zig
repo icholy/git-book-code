@@ -72,4 +72,6 @@ pub fn strings() !void {
     for (s) |byte| {
         std.debug.print("Byte: {X}\n", .{byte});
     }
+
+    std.debug.print("Len: {d}\n", .{s.len});
 }
