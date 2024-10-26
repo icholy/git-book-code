@@ -68,4 +68,8 @@ pub fn strings() !void {
 
     const bytes = [_]u8{ 0x48, 0x65, 0x6C, 0x6C, 0x6F };
     std.debug.print("Bytes: {s}\n", .{bytes});
+
+    for (s) |byte| {
+        std.debug.print("Byte: {X}\n", .{byte});
+    }
 }
