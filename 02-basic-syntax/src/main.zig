@@ -2,7 +2,7 @@ const std = @import("std");
 const builtin = @import("builtin");
 
 pub fn main() !void {
-    try scopes();
+    try strings();
 }
 
 pub fn variables() !void {
@@ -61,3 +61,5 @@ pub fn scopes() !void {
         std.debug.print("Hello\n", .{});
     }
 }
+
+pub fn strings() !void {}
