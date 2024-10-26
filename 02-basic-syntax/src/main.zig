@@ -2,7 +2,7 @@ const std = @import("std");
 const builtin = @import("builtin");
 
 pub fn main() !void {
-    try arrays();
+    try scopes();
 }
 
 pub fn variables() !void {
@@ -49,3 +49,5 @@ pub fn arrays() !void {
     const slice = buffer[0..];
     std.debug.print("Value: {d}", .{slice[9]});
 }
+
+pub fn scopes() !void {}
