@@ -18,7 +18,6 @@ pub fn variables() !void {
 pub fn arrays() !void {
     const ns = [4]u8{ 48, 24, 12, 6 };
     const ls = [_]f64{ 42.1, 92.2, 900 };
-    // _ = ns;
     _ = ls;
 
     // zero based indexing
@@ -28,6 +27,11 @@ pub fn arrays() !void {
     const sl = ns[1..2];
     _ = sl;
 
+    // partial range
     const all = ns[1..];
     std.debug.print("All: {any}\n", .{all});
+
+    // array operations
+    std.debug.print("Plus Plus Operator: {any}\n", .{all ++ all});
+    std.debug.print("Star Star Operator: {any}\n", .{[_]i32{2} ** 5});
 }
