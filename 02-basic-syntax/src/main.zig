@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn main() !void {
     try arrays();
@@ -34,4 +35,17 @@ pub fn arrays() !void {
     // array operations
     std.debug.print("Plus Plus Operator: {any}\n", .{all ++ all});
     std.debug.print("Star Star Operator: {any}\n", .{[_]i32{2} ** 5});
+
+    // runtime slice range
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    var n: usize = 0;
+    if (builtin.target.os.tag == .windows) {
+        n = 10;
+    } else {
+        n = 12;
+    }
+    const buffer = try allocator.alloc(u64, n);
+    const slice = buffer[0..];
+    _ = slice;
 }
