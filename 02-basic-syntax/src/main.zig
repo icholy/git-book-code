@@ -47,5 +47,5 @@ pub fn arrays() !void {
     }
     const buffer = try allocator.alloc(u64, n);
     const slice = buffer[0..];
-    _ = slice;
+    std.debug.print("Value: {d}", .{slice[9]});
 }
