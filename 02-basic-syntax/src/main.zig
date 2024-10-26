@@ -65,4 +65,7 @@ pub fn scopes() !void {
 pub fn strings() !void {
     const s: []const u8 = "A string";
     std.debug.print("String: {s}\n", .{s});
+
+    const bytes = [_]u8{ 0x48, 0x65, 0x6C, 0x6C, 0x6F };
+    std.debug.print("Bytes: {s}\n", .{bytes});
 }
