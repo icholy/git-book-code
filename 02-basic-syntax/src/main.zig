@@ -21,5 +21,10 @@ pub fn arrays() !void {
     // _ = ns;
     _ = ls;
 
+    // zero based indexing
     std.debug.print("Array ns[2]: {d}\n", .{ns[2]});
+
+    // array ranges
+    const sl = ns[1..2];
+    _ = sl;
 }
