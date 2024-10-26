@@ -8,5 +8,5 @@ pub fn main() !void {
 
     // you can assign to _ to avoid the unused local compiler error
     const y = 123;
-    _ = y;
+    _ = y; // you can't use y after doing this
 }
