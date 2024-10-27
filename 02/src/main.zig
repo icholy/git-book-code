@@ -117,3 +117,21 @@ test "anonymous struct" {
     const s = .{ .id = 1, .name = "Ilia" };
     try stdout.print("{}\n", .{@TypeOf(s)});
 }
+
+const Vec3 = struct {
+    x: f64,
+    y: f64,
+    z: f64,
+
+    pub fn distance(self: Vec3, other: Vec3) f64 {
+        const dx = self.x - other.x;
+        const dy = self.y - other.y;
+        const dz = self.z - other.z;
+        return @sqrt(dx * dx + dy * dy + dz * dz);
+    }
+};
+
+test "Vec3 struct" {
+    const v = Vec3{ .x = 1, .y = 2, .z = 3 };
+    try stdout.print("{d}\n", .{v.distance(v)});
+}
