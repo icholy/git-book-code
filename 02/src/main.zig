@@ -142,3 +142,9 @@ test "Vec3 struct" {
     v.double();
     try stdout.print("{d}\n", .{v.distance(v)});
 }
+
+test "@as" {
+    const x: usize = 5;
+    const y = @as(u32, x);
+    try std.testing.expect(@TypeOf(y) == u32);
+}
