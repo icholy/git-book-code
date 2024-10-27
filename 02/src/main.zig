@@ -31,3 +31,13 @@ test "switch statements" {
     }
     std.debug.print("{s}\n", .{area});
 }
+
+test "switch expression" {
+    const level = 1;
+    const x = switch (level) {
+        1 => "one",
+        2 => "two",
+        else => @panic("invalid"),
+    };
+    std.debug.print("{s}\n", .{x});
+}
