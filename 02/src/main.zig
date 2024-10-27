@@ -61,3 +61,10 @@ test "errdefer" {
     defer i = 2;
     // try foo();
 }
+
+test "for loop" {
+    const name = "Pedro";
+    for (name) |char| {
+        std.debug.print("{c}\n", .{char});
+    }
+}
