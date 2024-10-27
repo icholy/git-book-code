@@ -75,3 +75,10 @@ test "while loop" {
         i += 1;
     }
 }
+
+test "while inline increment" {
+    var i: u8 = 1;
+    while (i < 5) : (i += 2) {
+        std.debug.print("{d}\n", .{i});
+    }
+}
