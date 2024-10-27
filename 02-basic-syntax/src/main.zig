@@ -95,4 +95,5 @@ pub fn strings() !void {
     const a = "a";
     const b = "b";
     std.debug.print("Equal: {}\n", .{std.mem.eql(u8, a, b)});
+    std.debug.print("StartsWith: {}\n", .{std.mem.startsWith(u8, "fooo", "fo")});
 }
