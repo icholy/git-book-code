@@ -50,3 +50,14 @@ test "defer" {
     }
     std.debug.print("New test ...\n", .{});
 }
+
+fn foo() !void {
+    return error.FooError;
+}
+
+test "errdefer" {
+    var i: usize = 1;
+    errdefer std.debug.print("Value of i: {d}\n", .{i});
+    defer i = 2;
+    // try foo();
+}
