@@ -154,3 +154,8 @@ test "@castPtr" {
     const u32_ptr: *const u32 = @ptrCast(&bytes);
     try std.testing.expect(@TypeOf(u32_ptr) == *const u32);
 }
+
+test "@import" {
+    const f = @import("foo.zig");
+    try f.hello();
+}
