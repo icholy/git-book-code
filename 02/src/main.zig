@@ -129,9 +129,16 @@ const Vec3 = struct {
         const dz = self.z - other.z;
         return @sqrt(dx * dx + dy * dy + dz * dz);
     }
+
+    pub fn double(self: *Vec3) void {
+        self.x *= 2;
+        self.y *= 2;
+        self.z *= 2;
+    }
 };
 
 test "Vec3 struct" {
-    const v = Vec3{ .x = 1, .y = 2, .z = 3 };
+    var v = Vec3{ .x = 1, .y = 2, .z = 3 };
+    v.double();
     try stdout.print("{d}\n", .{v.distance(v)});
 }
