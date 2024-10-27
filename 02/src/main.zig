@@ -68,3 +68,10 @@ test "for loop" {
         std.debug.print("{d}: {c}\n", .{ i, char });
     }
 }
+
+test "while loop" {
+    var i: u8 = 1;
+    while (i < 3) {
+        i += 1;
+    }
+}
