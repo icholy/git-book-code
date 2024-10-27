@@ -42,3 +42,11 @@ test "switch expression" {
     };
     std.debug.print("{s}\n", .{x});
 }
+
+test "defer" {
+    defer std.debug.print("Existing test ...\n", .{});
+    {
+        defer std.debug.print("Inside block ... \n", .{});
+    }
+    std.debug.print("New test ...\n", .{});
+}
