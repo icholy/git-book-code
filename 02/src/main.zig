@@ -12,7 +12,7 @@ test "if statements" {
 }
 
 test "switch statements" {
-    const Role = enum { SE, DPE, DE, DA, PM, PO, KS };
+    const Role = enum { SE, DPE, DE, DA, PM, PO, KS, NONE };
     var area: []const u8 = undefined;
     const role = Role.SE;
     switch (role) {
@@ -24,6 +24,9 @@ test "switch statements" {
         },
         .KS => {
             area = "Sales";
+        },
+        else => {
+            area = "Unreachable";
         },
     }
     std.debug.print("{s}\n", .{area});
