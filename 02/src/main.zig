@@ -148,3 +148,9 @@ test "@as" {
     const y = @as(u32, x);
     try std.testing.expect(@TypeOf(y) == u32);
 }
+
+test "@castPtr" {
+    const bytes align(@alignOf(u32)) = [_]u8{ 12, 12, 12, 12 };
+    const u32_ptr: *const u32 = @ptrCast(&bytes);
+    try std.testing.expect(@TypeOf(u32_ptr) == *const u32);
+}
