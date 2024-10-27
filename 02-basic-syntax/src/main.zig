@@ -74,4 +74,11 @@ pub fn strings() !void {
     }
 
     std.debug.print("Len: {d}\n", .{s.len});
+
+    // a string is a pointer to an array
+    const string_object = "This is a string literal";
+    const simple_array = [_]i32{ 1, 2, 3, 4 };
+    std.debug.print("Type of array object: {}\n", .{@TypeOf(simple_array)});
+    std.debug.print("Type of string object: {}\n", .{@TypeOf(string_object)});
+    std.debug.print("Type of pointer to array: {}\n", .{@TypeOf(&simple_array)});
 }
