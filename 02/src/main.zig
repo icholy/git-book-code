@@ -64,7 +64,7 @@ test "errdefer" {
 
 test "for loop" {
     const name = "Pedro";
-    for (name) |char| {
-        std.debug.print("{c}\n", .{char});
+    for (name, 0..) |char, i| {
+        std.debug.print("{d}: {c}\n", .{ i, char });
     }
 }
