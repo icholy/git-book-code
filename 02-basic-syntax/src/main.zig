@@ -81,4 +81,13 @@ pub fn strings() !void {
     std.debug.print("Type of array object: {}\n", .{@TypeOf(simple_array)});
     std.debug.print("Type of string object: {}\n", .{@TypeOf(string_object)});
     std.debug.print("Type of pointer to array: {}\n", .{@TypeOf(&simple_array)});
+
+    // unicode code points
+    const chinese = "你好";
+    const view = try std.unicode.Utf8View.init(chinese);
+    var iterator = view.iterator();
+
+    while (iterator.nextCodepointSlice()) |codepoint| {
+        std.debug.print("Code Point: {s}\n", .{codepoint});
+    }
 }
