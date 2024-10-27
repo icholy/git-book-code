@@ -10,3 +10,21 @@ test "if statements" {
         std.debug.print("x is <= 10\n", .{});
     }
 }
+
+test "switch statements" {
+    const Role = enum { SE, DPE, DE, DA, PM, PO, KS };
+    var area: []const u8 = undefined;
+    const role = Role.SE;
+    switch (role) {
+        .PM, .SE, .DPE, .PO => {
+            area = "Platform";
+        },
+        .DE, .DA => {
+            area = "Data & Analytics";
+        },
+        .KS => {
+            area = "Sales";
+        },
+    }
+    std.debug.print("{s}\n", .{area});
+}
