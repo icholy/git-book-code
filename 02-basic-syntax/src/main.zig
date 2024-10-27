@@ -90,4 +90,9 @@ pub fn strings() !void {
     while (iterator.nextCodepointSlice()) |codepoint| {
         std.debug.print("Code Point: {s}\n", .{codepoint});
     }
+
+    // useful functions
+    const a = "a";
+    const b = "b";
+    std.debug.print("Equal: {}\n", .{std.mem.eql(u8, a, b)});
 }
