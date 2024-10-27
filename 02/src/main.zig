@@ -82,3 +82,12 @@ test "while inline increment" {
         std.debug.print("{d}\n", .{i});
     }
 }
+
+fn add2(x: u32) u32 {
+    x = x + 2;
+    return x;
+}
+
+test "cannot mutate argument" {
+    // add2(2);
+}
