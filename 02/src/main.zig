@@ -112,3 +112,8 @@ test "struct" {
     const u = User.init(123, "Ilia Choly", "ilia.choly@gmail.com");
     try u.print_name();
 }
+
+test "anonymous struct" {
+    const s = .{ .id = 1, .name = "Ilia" };
+    try stdout.print("{}\n", .{@TypeOf(s)});
+}
