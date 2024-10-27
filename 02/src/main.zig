@@ -26,7 +26,7 @@ test "switch statements" {
             area = "Sales";
         },
         else => {
-            area = "Unreachable";
+            @panic("unsupported role");
         },
     }
     std.debug.print("{s}\n", .{area});
