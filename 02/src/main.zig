@@ -1,4 +1,5 @@
 const std = @import("std");
+const stdout = std.io.getStdOut().writer();
 
 pub fn main() !void {}
 
@@ -91,4 +92,23 @@ test "cannot mutate argument" {
     var x: u32 = 2;
     add2(&x);
     std.debug.print("{d}\n", .{x});
+}
+
+const User = struct {
+    id: u64,
+    name: []const u8,
+    email: []const u8,
+
+    pub fn init(id: u64, name: []const u8, email: []const u8) User {
+        return User{ .id = id, .name = name, .email = email };
+    }
+
+    pub fn print_name(self: User) !void {
+        try stdout.print("{s}\n", .{self.name});
+    }
+};
+
+test "struct" {
+    const u = User.init(123, "Ilia Choly", "ilia.choly@gmail.com");
+    try u.print_name();
 }
