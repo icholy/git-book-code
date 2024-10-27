@@ -33,10 +33,11 @@ test "switch statements" {
 }
 
 test "switch expression" {
-    const level = 1;
+    const level = 100;
     const x = switch (level) {
         1 => "one",
         2 => "two",
+        3...100 => "3 - 100",
         else => @panic("invalid"),
     };
     std.debug.print("{s}\n", .{x});
