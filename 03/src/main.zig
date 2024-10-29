@@ -43,3 +43,13 @@ test "fixed buffer allocator" {
         x.* = @floatFromInt(i);
     }
 }
+
+test "arena allocator" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var aa = std.heap.ArenaAllocator.init(gpa.allocator());
+    defer aa.deinit();
+    const allocator = aa.allocator();
+
+    const a1 = allocator.alloc(u8, 10);
+    _ = a1;
+}
