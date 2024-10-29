@@ -13,3 +13,11 @@ test "known at compile time" {
     _ = name;
     _ = array;
 }
+
+test "gpa" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    const name = "Ilia";
+    const output = try std.fmt.allocPrint(allocator, "Hello {s}!!!", .{name});
+    try stdout.print("{s}\n", .{output});
+}
