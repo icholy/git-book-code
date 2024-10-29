@@ -21,3 +21,12 @@ test "gpa" {
     const output = try std.fmt.allocPrint(allocator, "Hello {s}!!!", .{name});
     try stdout.print("{s}\n", .{output});
 }
+
+test "allocate int" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    const ptr = try allocator.create(i64);
+    defer allocator.destroy(ptr);
+    ptr.* = 123;
+    try stdout.print("{d}\n", .{ptr.*});
+}
