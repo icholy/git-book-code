@@ -30,3 +30,16 @@ test "allocate int" {
     ptr.* = 123;
     try stdout.print("{d}\n", .{ptr.*});
 }
+
+test "fixed buffer allocator" {
+    var buffer: [100]u8 = undefined;
+    for (0..buffer.len) |i| {
+        buffer[i] = 0;
+    }
+    var fba = std.heap.FixedBufferAllocator.init(&buffer);
+    const allocator = fba.allocator();
+    for (0..10) |i| {
+        const x = try allocator.create(f64);
+        x.* = @floatFromInt(i);
+    }
+}
