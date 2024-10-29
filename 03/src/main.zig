@@ -61,6 +61,27 @@ test "arena allocator" {
     defer aa.deinit();
     const allocator = aa.allocator();
 
-    const a1 = allocator.alloc(u8, 10);
+    const a1 = try allocator.alloc(u8, 10);
     _ = a1;
+}
+
+const User = struct {
+    id: usize,
+    name: []const u8,
+
+    pub fn init(id: usize, name: []const u8) User {
+        return .{
+            .id = id,
+            .name = name,
+        };
+    }
+};
+
+test "allocate struct" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    const user = try allocator.create(User);
+    defer allocator.destroy(user);
+    user.* = User.init(1, "ilia");
+    try stdout.print("{any}\n", .{user.*});
 }
