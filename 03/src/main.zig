@@ -1,7 +1,18 @@
 const std = @import("std");
 const stdout = std.io.getStdOut().writer();
+const stdin = std.io.getStdIn().reader();
 
-pub fn main() !void {}
+pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    var input = try allocator.alloc(u8, 50);
+    defer allocator.free(input);
+    for (0..input.len) |i| {
+        input[i] = 0;
+    }
+    _ = try stdin.readUntilDelimiterOrEof(input, '\n');
+    try stdout.print("Input: {s}\n", .{input});
+}
 
 fn input_length(input: []const u8) usize {
     return input.len;
