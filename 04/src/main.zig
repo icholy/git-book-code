@@ -54,6 +54,12 @@ const Base64 = struct {
         const n_output: usize = try std.math.divFloor(usize, input.len, 4);
         return n_output * 3;
     }
+
+    fn _encode_group(group: [3]u8, _: usize) [4]u8 {
+        var output: [4]u8 = .{ 0, 0, 0, 0 };
+        output[0] = group[0] >> 2;
+        return output;
+    }
 };
 
 test "base64scale returns the right value" {
@@ -76,4 +82,10 @@ test "_calc_decode_length" {
     try std.testing.expectEqual(3, Base64._calc_decode_length(""));
     try std.testing.expectEqual(3, Base64._calc_decode_length("a"));
     try std.testing.expectEqual(3, Base64._calc_decode_length("aaaa"));
+}
+
+test "_encode_group" {
+    try std.testing.expectEqual([_]u8{ 0b010010, 0, 0, 0 }, Base64._encode_group(.{
+        'H', 0, 0,
+    }, 1));
 }
