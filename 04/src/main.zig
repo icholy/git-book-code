@@ -4,20 +4,11 @@
 const std = @import("std");
 
 pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
-
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    try bw.flush(); // Don't forget to flush!
+    const base64 = Base64.init();
+    std.debug.print("All your {any} are belong to us.\n", .{base64});
 }
+
+const default_table = base64scale();
 
 fn base64scale() [64]u8 {
     var scale: [64]u8 = undefined;
@@ -34,6 +25,16 @@ fn base64scale() [64]u8 {
     scale[63] = '/';
     return scale;
 }
+
+const Base64 = struct {
+    _table: *const [64]u8,
+
+    pub fn init() Base64 {
+        return Base64{
+            ._table = &default_table,
+        };
+    }
+};
 
 test "test scale" {
     const scale = base64scale();
