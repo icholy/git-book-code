@@ -55,13 +55,23 @@ const Base64 = struct {
         return n_output * 3;
     }
 
-    fn _encode_group(group: [3]u8, _: usize) [4]u8 {
+    fn _encode_group(group: [3]u8, n: usize) [4]u8 {
         var output: [4]u8 = .{ 0, 0, 0, 0 };
         output[0] = group[0] >> 2;
         output[1] |= (group[0] & 0x3) << 4;
-        std.debug.print("1: {b}\n", .{group[0]});
-        std.debug.print("2: {b}\n", .{group[0] & 0x3});
-        std.debug.print("3: {b}\n", .{(group[0] & 0x3) << 4});
+
+        if (n > 1) {
+            output[1] |= group[1] >> 4;
+            output[2] |= (group[1] & 0xF) << 2;
+        }
+
+        // if n > 1 {
+        //     output[1] |= (group[1] && >> 3)
+        // }
+
+        // std.debug.print("1: {b}\n", .{group[0]});
+        // std.debug.print("2: {b}\n", .{group[0] & 0x3});
+        // std.debug.print("3: {b}\n", .{(group[0] & 0x3) << 4});
         return output;
     }
 };
@@ -92,6 +102,7 @@ test "_encode_group" {
     const tests = .{
         .{ .group = [3]u8{ 'H', 0, 0 }, .encoded = [4]u8{ 0b010010, 0, 0, 0 }, .n = 1 },
         .{ .group = [3]u8{ 'G', 0, 0 }, .encoded = [4]u8{ 0b010001, 0b110000, 0, 0 }, .n = 1 },
+        .{ .group = [3]u8{ 'H', 'i', 0 }, .encoded = [4]u8{ 0b010010, 0b000110, 0b100100, 0 }, .n = 2 },
     };
     inline for (tests) |t| {
         try std.testing.expectEqual(t.encoded, Base64._encode_group(t.group, t.n));
