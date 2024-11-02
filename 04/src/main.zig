@@ -65,11 +65,7 @@ const Base64 = struct {
         }
         if (n > 2) {
             output[2] |= group[2] >> 6;
-
-            std.debug.print("{b:8}\n", .{group[2]});
-            std.debug.print("{b:8}\n", .{group[2] >> 6});
-
-            // output[3] |= (group[2] & 0x3) << 4;
+            output[3] |= group[2] & 0x3F;
         }
         return output;
     }
@@ -103,6 +99,7 @@ test "_encode_group" {
         .{ .group = [3]u8{ 'G', 0, 0 }, .encoded = [4]u8{ 0b010001, 0b110000, 0, 0 }, .n = 1 },
         .{ .group = [3]u8{ 'H', 'i', 0 }, .encoded = [4]u8{ 0b010010, 0b000110, 0b100100, 0 }, .n = 2 },
         .{ .group = [3]u8{ 'H', 'i', '@' }, .encoded = [4]u8{ 0b010010, 0b000110, 0b100101, 0 }, .n = 3 },
+        .{ .group = [3]u8{ 'H', 'i', 'H' }, .encoded = [4]u8{ 0b010010, 0b000110, 0b100101, 0b001000 }, .n = 3 },
     };
     inline for (tests) |t| {
         try std.testing.expectEqual(t.encoded, Base64._encode_group(t.group, t.n));
