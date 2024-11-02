@@ -70,7 +70,7 @@ const Base64 = struct {
         while (i < input.len) : (i += 3) {
             const group = switch (input.len - i) {
                 1 => _encode_group(.{ input[i], 0, 0 }, 1),
-                2 => _encode_group(.{ input[i], input[2], 0 }, 2),
+                2 => _encode_group(.{ input[i], input[i + 1], 0 }, 2),
                 else => _encode_group(.{ input[i], input[i + 1], input[i + 2] }, 3),
             };
             buffer[offset] = group[0];
