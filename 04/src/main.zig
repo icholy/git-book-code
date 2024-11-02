@@ -1,13 +1,13 @@
 const std = @import("std");
 
 pub fn main() !void {
-    const arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
     var reader = std.io.getStdIn().reader();
     const input = try reader.readAllAlloc(allocator, 500 << 20);
     const output = try Base64.encode(allocator, input);
-    try std.io.getStdOut().write(output);
+    try std.io.getStdOut().writeAll(output);
 }
 
 const default_table = base64scale();
