@@ -40,7 +40,12 @@ const Base64 = struct {
     }
 };
 
-test "test scale" {
+test "base64scale returns the right value" {
     const scale = base64scale();
     try std.testing.expectEqualStrings("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", &scale);
+}
+
+test "_char_at returns the right value" {
+    const base64 = Base64.init();
+    try std.testing.expectEqual('c', base64._char_at(28));
 }
