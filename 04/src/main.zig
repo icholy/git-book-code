@@ -39,12 +39,20 @@ const Base64 = struct {
         return self._table[index];
     }
 
-    pub fn _encoded_len(data_len: usize) usize {
-        var n_groups = data_len / 3;
-        if (data_len % 3 != 0) {
-            n_groups += 1;
+    fn _calc_encode_length(input: []const u8) !usize {
+        if (input.len < 3) {
+            return 4;
         }
+        const n_groups = try std.math.divCeil(usize, input.len, 3);
         return n_groups * 4;
+    }
+
+    fn _calc_decode_length(input: []const u8) !usize {
+        if (input.len < 4) {
+            return 3;
+        }
+        const n_output: usize = try std.math.divFloor(usize, input.len, 4);
+        return n_output * 3;
     }
 };
 
@@ -58,8 +66,14 @@ test "_char_at returns the right value" {
     try std.testing.expectEqual('c', base64._char_at(28));
 }
 
-test "_encoded_len" {
-    try std.testing.expectEqual(0, Base64._encoded_len(0));
-    try std.testing.expectEqual(4, Base64._encoded_len(1));
-    try std.testing.expectEqual(8, Base64._encoded_len(4));
+test "_calc_encode_length" {
+    try std.testing.expectEqual(4, Base64._calc_encode_length(""));
+    try std.testing.expectEqual(4, Base64._calc_encode_length("a"));
+    try std.testing.expectEqual(8, Base64._calc_encode_length("aaaa"));
+}
+
+test "_calc_decode_length" {
+    try std.testing.expectEqual(3, Base64._calc_decode_length(""));
+    try std.testing.expectEqual(3, Base64._calc_decode_length("a"));
+    try std.testing.expectEqual(3, Base64._calc_decode_length("aaaa"));
 }
