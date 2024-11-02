@@ -1,11 +1,13 @@
-//! By convention, main.zig is where your main function lives in the case that
-//! you are building an executable. If you are making a library, the convention
-//! is to delete this file and start with root.zig instead.
 const std = @import("std");
 
 pub fn main() !void {
-    const base64 = Base64.init();
-    std.debug.print("All your {any} are belong to us.\n", .{base64});
+    const arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+    var reader = std.io.getStdIn().reader();
+    const input = try reader.readAllAlloc(allocator, 500 << 20);
+    const output = try Base64.encode(allocator, input);
+    try std.io.getStdOut().write(output);
 }
 
 const default_table = base64scale();
