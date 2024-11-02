@@ -115,6 +115,8 @@ test "_encode_base64_group" {
 test "encode" {
     const tests = .{
         .{ .input = "a", .output = "YQ==" },
+        .{ .input = "Test", .output = "VGVzdA==" },
+        .{ .input = "This is a test", .output = "VGhpcyBpcyBhIHRlc3Q=" },
     };
 
     inline for (tests) |t| {
