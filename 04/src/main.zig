@@ -115,22 +115,23 @@ test "encode" {
     }
 }
 
-// test "fuzz" {
-//     const global = struct {
-//         fn testOne(input: []const u8) anyerror!void {
-//             // encode using stdlib
-//             const enc = std.base64.Base64Encoder.init(std.base64.standard_alphabet_chars, '=');
-//             const buffer = try std.testing.allocator.alloc(u8, enc.calcSize(input.len));
-//             defer std.testing.allocator.free(buffer);
-//             const b = enc.encode(buffer, input);
-//
-//             // encode using ours
-//             const a = try Base64.encode(std.testing.allocator, input);
-//             defer std.testing.allocator.free(a);
-//
-//             // make sure they're the same
-//             try std.testing.expectEqualStrings(a, b);
-//         }
-//     };
-//     try std.testing.fuzz(global.testOne, .{});
-// }
+// run: 'zig build test --fuzz' to run
+test "fuzz" {
+    const global = struct {
+        fn testOne(input: []const u8) anyerror!void {
+            // encode using stdlib
+            const enc = std.base64.Base64Encoder.init(std.base64.standard_alphabet_chars, '=');
+            const buffer = try std.testing.allocator.alloc(u8, enc.calcSize(input.len));
+            defer std.testing.allocator.free(buffer);
+            const b = enc.encode(buffer, input);
+
+            // encode using ours
+            const a = try Base64.encode(std.testing.allocator, input);
+            defer std.testing.allocator.free(a);
+
+            // make sure they're the same
+            try std.testing.expectEqualStrings(a, b);
+        }
+    };
+    try std.testing.fuzz(global.testOne, .{});
+}
