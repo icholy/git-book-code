@@ -27,23 +27,11 @@ fn base64scale() [64]u8 {
 }
 
 const Base64 = struct {
-    _table: *const [64]u8,
-
-    pub fn init() Base64 {
-        return Base64{
-            ._table = &default_table,
-        };
-    }
-
-    pub fn _char_at(self: Base64, index: u8) u8 {
-        return self._table[index];
-    }
-
-    fn _calc_encode_length(input: []const u8) !usize {
-        if (input.len < 3) {
-            return 4;
+    fn _calc_encode_length(input_len: usize) usize {
+        var n_groups = input_len / 3;
+        if (input_len % 3 != 0) {
+            n_groups += 1;
         }
-        const n_groups = try std.math.divCeil(usize, input.len, 3);
         return n_groups * 4;
     }
 
@@ -74,6 +62,25 @@ const Base64 = struct {
             if (n > 2) default_table[output[3]] else '=',
         };
     }
+
+    fn encode(allocator: std.mem.Allocator, input: []const u8) ![]u8 {
+        var buffer = try allocator.alloc(u8, _calc_encode_length(input.len));
+        var offset: usize = 0;
+        var i: usize = 0;
+        while (i < input.len) : (i += 3) {
+            const group = switch (input.len - i) {
+                1 => _encode_group(.{ input[i], 0, 0 }, 1),
+                2 => _encode_group(.{ input[i], input[2], 0 }, 2),
+                else => _encode_group(.{ input[i], input[i + 1], input[i + 2] }, 3),
+            };
+            buffer[offset] = group[0];
+            buffer[offset + 1] = group[1];
+            buffer[offset + 2] = group[2];
+            buffer[offset + 3] = group[3];
+            offset += 4;
+        }
+        return buffer;
+    }
 };
 
 test "base64scale returns the right value" {
@@ -81,15 +88,10 @@ test "base64scale returns the right value" {
     try std.testing.expectEqualStrings("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", &scale);
 }
 
-test "_char_at returns the right value" {
-    const base64 = Base64.init();
-    try std.testing.expectEqual('c', base64._char_at(28));
-}
-
 test "_calc_encode_length" {
-    try std.testing.expectEqual(4, Base64._calc_encode_length(""));
-    try std.testing.expectEqual(4, Base64._calc_encode_length("a"));
-    try std.testing.expectEqual(8, Base64._calc_encode_length("aaaa"));
+    try std.testing.expectEqual(0, Base64._calc_encode_length(0));
+    try std.testing.expectEqual(4, Base64._calc_encode_length(1));
+    try std.testing.expectEqual(8, Base64._calc_encode_length(4));
 }
 
 test "_calc_decode_length" {
@@ -110,6 +112,14 @@ test "_encode_base64_group" {
     }
 }
 
-// test "shift" {
-//     std.debug.print("{b}\n", .{('G' & 0x00000011) << 6});
-// }
+test "encode" {
+    const tests = .{
+        .{ .input = "a", .output = "YQ==" },
+    };
+
+    inline for (tests) |t| {
+        const encoded = try Base64.encode(std.testing.allocator, t.input);
+        defer std.testing.allocator.free(encoded);
+        try std.testing.expectEqualStrings(t.output, encoded);
+    }
+}
