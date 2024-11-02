@@ -67,7 +67,12 @@ const Base64 = struct {
             output[2] |= group[2] >> 6;
             output[3] |= group[2] & 0x3F;
         }
-        return output;
+        return .{
+            default_table[output[0]],
+            default_table[output[1]],
+            if (n > 1) default_table[output[2]] else '=',
+            if (n > 2) default_table[output[3]] else '=',
+        };
     }
 };
 
@@ -93,16 +98,15 @@ test "_calc_decode_length" {
     try std.testing.expectEqual(3, Base64._calc_decode_length("aaaa"));
 }
 
-test "_encode_group" {
+test "_encode_base64_group" {
     const tests = .{
-        .{ .group = [3]u8{ 'H', 0, 0 }, .encoded = [4]u8{ 0b010010, 0, 0, 0 }, .n = 1 },
-        .{ .group = [3]u8{ 'G', 0, 0 }, .encoded = [4]u8{ 0b010001, 0b110000, 0, 0 }, .n = 1 },
-        .{ .group = [3]u8{ 'H', 'i', 0 }, .encoded = [4]u8{ 0b010010, 0b000110, 0b100100, 0 }, .n = 2 },
-        .{ .group = [3]u8{ 'H', 'i', '@' }, .encoded = [4]u8{ 0b010010, 0b000110, 0b100101, 0 }, .n = 3 },
-        .{ .group = [3]u8{ 'H', 'i', 'H' }, .encoded = [4]u8{ 0b010010, 0b000110, 0b100101, 0b001000 }, .n = 3 },
+        .{ .group = [3]u8{ 'H', 'i', 0 }, .b64 = "SGk=", .n = 2 },
+        .{ .group = [3]u8{ 'a', 'a', 'a' }, .b64 = "YWFh", .n = 3 },
+        .{ .group = [3]u8{ 's', 'd', 'f' }, .b64 = "c2Rm", .n = 3 },
+        .{ .group = [3]u8{ 'a', 0, 0 }, .b64 = "YQ==", .n = 1 },
     };
     inline for (tests) |t| {
-        try std.testing.expectEqual(t.encoded, Base64._encode_group(t.group, t.n));
+        try std.testing.expectEqualStrings(t.b64, &Base64._encode_group(t.group, t.n));
     }
 }
 
