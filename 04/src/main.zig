@@ -27,20 +27,12 @@ fn base64scale() [64]u8 {
 }
 
 const Base64 = struct {
-    fn _calc_encode_length(input_len: usize) usize {
+    fn _encode_len(input_len: usize) usize {
         var n_groups = input_len / 3;
         if (input_len % 3 != 0) {
             n_groups += 1;
         }
         return n_groups * 4;
-    }
-
-    fn _calc_decode_length(input: []const u8) !usize {
-        if (input.len < 4) {
-            return 3;
-        }
-        const n_output: usize = try std.math.divFloor(usize, input.len, 4);
-        return n_output * 3;
     }
 
     fn _encode_group(group: [3]u8, n: usize) [4]u8 {
@@ -64,7 +56,7 @@ const Base64 = struct {
     }
 
     fn encode(allocator: std.mem.Allocator, input: []const u8) ![]u8 {
-        var buffer = try allocator.alloc(u8, _calc_encode_length(input.len));
+        var buffer = try allocator.alloc(u8, _encode_len(input.len));
         var offset: usize = 0;
         var i: usize = 0;
         while (i < input.len) : (i += 3) {
@@ -88,19 +80,13 @@ test "base64scale returns the right value" {
     try std.testing.expectEqualStrings("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", &scale);
 }
 
-test "_calc_encode_length" {
-    try std.testing.expectEqual(0, Base64._calc_encode_length(0));
-    try std.testing.expectEqual(4, Base64._calc_encode_length(1));
-    try std.testing.expectEqual(8, Base64._calc_encode_length(4));
+test "_encode_len" {
+    try std.testing.expectEqual(0, Base64._encode_len(0));
+    try std.testing.expectEqual(4, Base64._encode_len(1));
+    try std.testing.expectEqual(8, Base64._encode_len(4));
 }
 
-test "_calc_decode_length" {
-    try std.testing.expectEqual(3, Base64._calc_decode_length(""));
-    try std.testing.expectEqual(3, Base64._calc_decode_length("a"));
-    try std.testing.expectEqual(3, Base64._calc_decode_length("aaaa"));
-}
-
-test "_encode_base64_group" {
+test "_encode_group" {
     const tests = .{
         .{ .group = [3]u8{ 'H', 'i', 0 }, .b64 = "SGk=", .n = 2 },
         .{ .group = [3]u8{ 'a', 'a', 'a' }, .b64 = "YWFh", .n = 3 },
