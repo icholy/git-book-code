@@ -85,7 +85,10 @@ test "_calc_decode_length" {
 }
 
 test "_encode_group" {
-    try std.testing.expectEqual([_]u8{ 0b010010, 0, 0, 0 }, Base64._encode_group(.{
-        'H', 0, 0,
-    }, 1));
+    const tests = .{
+        .{ .group = [3]u8{ 'H', 0, 0 }, .encoded = [4]u8{ 0b010010, 0, 0, 0 }, .n = 1 },
+    };
+    inline for (tests) |t| {
+        try std.testing.expectEqual(t.encoded, Base64._encode_group(t.group, t.n));
+    }
 }
