@@ -34,6 +34,10 @@ const Base64 = struct {
             ._table = &default_table,
         };
     }
+
+    pub fn _char_at(self: Base64, index: u8) u8 {
+        return self._table[index];
+    }
 };
 
 test "test scale" {
