@@ -38,6 +38,14 @@ const Base64 = struct {
     pub fn _char_at(self: Base64, index: u8) u8 {
         return self._table[index];
     }
+
+    pub fn _encoded_len(data_len: usize) usize {
+        var n_groups = data_len / 3;
+        if (data_len % 3 != 0) {
+            n_groups += 1;
+        }
+        return n_groups * 4;
+    }
 };
 
 test "base64scale returns the right value" {
@@ -48,4 +56,10 @@ test "base64scale returns the right value" {
 test "_char_at returns the right value" {
     const base64 = Base64.init();
     try std.testing.expectEqual('c', base64._char_at(28));
+}
+
+test "_encoded_len" {
+    try std.testing.expectEqual(0, Base64._encoded_len(0));
+    try std.testing.expectEqual(4, Base64._encoded_len(1));
+    try std.testing.expectEqual(8, Base64._encoded_len(4));
 }
