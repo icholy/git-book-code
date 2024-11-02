@@ -106,6 +106,7 @@ test "_encode_base64_group" {
         .{ .group = [3]u8{ 'a', 'a', 'a' }, .b64 = "YWFh", .n = 3 },
         .{ .group = [3]u8{ 's', 'd', 'f' }, .b64 = "c2Rm", .n = 3 },
         .{ .group = [3]u8{ 'a', 0, 0 }, .b64 = "YQ==", .n = 1 },
+        .{ .group = [3]u8{ 's', 't', 0 }, .b64 = "c3Q=", .n = 2 },
     };
     inline for (tests) |t| {
         try std.testing.expectEqualStrings(t.b64, &Base64._encode_group(t.group, t.n));
