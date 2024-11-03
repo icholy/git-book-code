@@ -41,7 +41,7 @@ pub fn main() !void {
 
     // find the test names and create configurations for them
     const tree = try Ast.parse(allocator, source, .zig);
-    const names = try findTestNames(allocator, tree);
+    const names = try findTestNames(allocator, filename, tree);
 
     var configurations = std.ArrayList(LaunchConfiguration).init(allocator);
 
@@ -92,10 +92,17 @@ pub fn main() !void {
     try std.json.stringify(launch, .{ .whitespace = .indent_tab, .emit_null_optional_fields = false }, stdout);
 }
 
-// The returned ArrayList contains references to the tree.
-fn findTestNames(allocator: std.mem.Allocator, tree: Ast) !std.ArrayList([]const u8) {
+fn findTestNames(allocator: std.mem.Allocator, filename: []const u8, tree: Ast) !std.ArrayList([]const u8) {
     var names = std.ArrayList([]const u8).init(allocator);
-    errdefer names.deinit();
+    errdefer {
+        for (names.items) |name| allocator.free(name);
+        names.deinit();
+    }
+    var namespace = std.fs.path.basename(filename);
+    const ext = ".zig";
+    if (std.mem.endsWith(u8, namespace, ext)) {
+        namespace = namespace[0 .. namespace.len - ext.len];
+    }
     const tags = tree.nodes.items(.tag);
     const datas = tree.nodes.items(.data);
     for (tree.rootDecls()) |index| {
@@ -110,7 +117,9 @@ fn findTestNames(allocator: std.mem.Allocator, tree: Ast) !std.ArrayList([]const
         if (std.mem.endsWith(u8, unquoted, "\"")) {
             unquoted = unquoted[0 .. unquoted.len - 1];
         }
-        try names.append(unquoted);
+        const fqn = try std.fmt.allocPrint(allocator, "{s}.test.{s}", .{ namespace, unquoted });
+        errdefer allocator.free(fqn);
+        try names.append(fqn);
     }
     return names;
 }
