@@ -80,7 +80,7 @@ pub fn main() !void {
             .type = "lldb",
             .request = "launch",
             .cwd = "${workspaceFolder}",
-            .program = try std.fmt.allocPrint(allocator, "${{workspaceFolder}}/.zig-cache/tmp/{s}", .{bin_name}),
+            .program = try std.fmt.allocPrint(allocator, "${{workspaceFolder}}/.zig-cache/test/{s}", .{bin_name}),
         });
     }
 
