@@ -96,7 +96,7 @@ pub fn main() !void {
             .type = "lldb",
             .request = "launch",
             .cwd = "${workspaceFolder}",
-            .program = try std.fmt.allocPrint(allocator, "${{workspaceFolder}}/zig-cache/tmp/{s}", .{bin_name}),
+            .program = try std.fmt.allocPrint(allocator, "${{workspaceFolder}}/.zig-cache/tmp/{s}", .{bin_name}),
         });
     }
 
@@ -106,13 +106,6 @@ pub fn main() !void {
     };
 
     try std.json.stringify(launch, .{ .whitespace = .indent_tab, .emit_null_optional_fields = false }, stdout);
-}
-
-fn is_valid_filepath_char(ch: u8) bool {
-    return switch (ch) {
-        'a'...'z', 'A'...'Z', '0'...'9', '_' => true,
-        else => false,
-    };
 }
 
 test "foo" {

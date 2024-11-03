@@ -1,13 +1,19 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Launch",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/zig-out/bin/05",
-            "cwd": "${workspaceFolder}",
-            "args": []
-        }
-    ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Test: \"foo\"",
+			"type": "lldb",
+			"request": "launch",
+			"program": "${workspaceFolder}/.zig-cache/tmp/foo",
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"name": "Run Test: \"bar\"",
+			"type": "lldb",
+			"request": "launch",
+			"program": "${workspaceFolder}/.zig-cache/tmp/bar",
+			"cwd": "${workspaceFolder}"
+		}
+	]
 }
