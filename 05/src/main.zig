@@ -17,14 +17,16 @@ const LaunchJSON = struct {
 };
 
 pub fn main() !void {
-    const filename = "./src/main.zig";
-
     // setup allocator
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
 
     const cwd_path = try std.fs.cwd().realpathAlloc(allocator, ".");
+
+    const args = std.process.args();
+    _ = args.skip();
+    const filename = try args.initWithAllocator(allocator);
 
     // read source file
     var file = try std.fs.cwd().openFile(filename, .{});
