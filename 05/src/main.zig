@@ -75,6 +75,7 @@ pub fn main() !void {
             "zig",
             "test",
             filename,
+            "--test-no-exec",
             "--test-filter",
             unquoted,
             try std.fmt.allocPrint(allocator, "-femit-bin={s}", .{bin_path}),
