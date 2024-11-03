@@ -22,11 +22,16 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    const cwd_path = try std.fs.cwd().realpathAlloc(allocator, ".");
+    // parse arg
+    const args = try std.process.argsAlloc(allocator);
+    if (args.len != 2) {
+        std.debug.print("usage: {s} <filename>\n", .{args[0]});
+        return error.InvalidArgs;
+    }
+    const filename = args[1];
 
-    const args = std.process.args();
-    _ = args.skip();
-    const filename = try args.initWithAllocator(allocator);
+    // get the cwd
+    const cwd_path = try std.fs.cwd().realpathAlloc(allocator, ".");
 
     // read source file
     var file = try std.fs.cwd().openFile(filename, .{});
