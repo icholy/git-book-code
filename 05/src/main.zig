@@ -30,13 +30,14 @@ pub fn main() !void {
     }
     const filename = args[1];
 
-    // get the cwd
-    const cwd_path = try std.fs.cwd().realpathAlloc(allocator, ".");
-
     // read source file
     var file = try std.fs.cwd().openFile(filename, .{});
     defer file.close();
     const source = try file.readToEndAllocOptions(allocator, std.math.maxInt(usize), null, @alignOf(u8), 0);
+
+    // create output dir
+    var bin_dir = try std.fs.cwd().makeOpenPath(".zig-cache/test", .{ .access_sub_paths = true });
+    defer bin_dir.close();
 
     // find the test names and create configurations for them
     var configurations = std.ArrayList(LaunchConfiguration).init(allocator);
@@ -47,8 +48,7 @@ pub fn main() !void {
         if (tags[index] != .test_decl) {
             continue;
         }
-        const data = datas[index];
-        const name = tree.tokenSlice(data.lhs);
+        const name = tree.tokenSlice(datas[index].lhs);
 
         // remove quotes
         var unquoted = name;
@@ -59,15 +59,14 @@ pub fn main() !void {
             unquoted = unquoted[0 .. unquoted.len - 1];
         }
 
-        // bin name
-        var bin_name = try allocator.dupe(u8, unquoted);
-        for (bin_name, 0..) |c, i| {
-            bin_name[i] = switch (c) {
-                'a'...'z', 'A'...'Z', '0'...'9' => c,
-                else => '_',
-            };
-        }
-        const bin_path = try std.fs.path.resolve(allocator, &.{ cwd_path, ".zig-cache", "tmp", bin_name });
+        // use the sha1 of the test name for the bin name
+        var name_sha1: [std.crypto.hash.Sha1.digest_length]u8 = undefined;
+        std.crypto.hash.Sha1.hash(name, &name_sha1, .{});
+        const bin_name = std.fmt.bytesToHex(&name_sha1, .lower);
+        const bin_path = try std.fs.path.join(allocator, &.{
+            try bin_dir.realpathAlloc(allocator, "."),
+            &bin_name,
+        });
         std.debug.print("building: {s}\n", .{bin_path});
 
         // compile the test binary
