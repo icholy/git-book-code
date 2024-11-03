@@ -18,10 +18,13 @@ const LaunchJSON = struct {
 
 pub fn main() !void {
     const filename = "./src/main.zig";
+
     // setup allocator
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
+
+    const cwd_path = try std.fs.cwd().realpathAlloc(allocator, ".");
 
     // read source file
     var file = try std.fs.cwd().openFile(filename, .{});
@@ -57,6 +60,8 @@ pub fn main() !void {
                 else => '_',
             };
         }
+        const bin_path = try std.fs.path.resolve(allocator, &.{ cwd_path, ".zig-cache", "tmp", bin_name });
+        std.debug.print("building: {s}\n", .{bin_path});
 
         // compile the test binary
         const cmd = &[_][]const u8{
@@ -65,12 +70,13 @@ pub fn main() !void {
             filename,
             "--test-filter",
             unquoted,
-            try std.fmt.allocPrint(allocator, "-femit-bin=./zig-cache/tmp/{s}", .{bin_name}),
+            try std.fmt.allocPrint(allocator, "-femit-bin={s}", .{bin_path}),
         };
         var child = std.process.Child.init(cmd, allocator);
         child.stdout_behavior = .Pipe;
         child.stdout_behavior = .Pipe;
         child.stderr_behavior = .Pipe;
+        child.cwd = try std.fs.cwd().realpathAlloc(allocator, ".");
 
         const term = try child.spawnAndWait();
         switch (term) {
