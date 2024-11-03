@@ -82,7 +82,6 @@ pub fn main() !void {
         };
         var child = std.process.Child.init(cmd, allocator);
         child.stdout_behavior = .Pipe;
-        child.stdout_behavior = .Pipe;
         child.stderr_behavior = .Pipe;
         child.cwd = try std.fs.cwd().realpathAlloc(allocator, ".");
 
