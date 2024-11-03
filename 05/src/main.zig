@@ -40,45 +40,23 @@ pub fn main() !void {
     defer bin_dir.close();
 
     // find the test names and create configurations for them
+    const tree = try Ast.parse(allocator, source, .zig);
+    const names = try findTestNames(allocator, tree);
+
     var configurations = std.ArrayList(LaunchConfiguration).init(allocator);
-    var tree = try Ast.parse(allocator, source, .zig);
-    const tags = tree.nodes.items(.tag);
-    const datas = tree.nodes.items(.data);
-    for (tree.rootDecls()) |index| {
-        if (tags[index] != .test_decl) {
-            continue;
-        }
-        const name = tree.tokenSlice(datas[index].lhs);
 
-        // remove quotes
-        var unquoted = name;
-        if (std.mem.startsWith(u8, unquoted, "\"")) {
-            unquoted = unquoted[1..];
-        }
-        if (std.mem.endsWith(u8, unquoted, "\"")) {
-            unquoted = unquoted[0 .. unquoted.len - 1];
-        }
-
+    for (names.items) |name| {
         // use the sha1 of the test name for the bin name
         var name_sha1: [std.crypto.hash.Sha1.digest_length]u8 = undefined;
         std.crypto.hash.Sha1.hash(name, &name_sha1, .{});
         const bin_name = std.fmt.bytesToHex(&name_sha1, .lower);
-        const bin_path = try std.fs.path.join(allocator, &.{
-            try bin_dir.realpathAlloc(allocator, "."),
-            &bin_name,
-        });
-        std.debug.print("building: {s}\n", .{bin_path});
+        const real_bin_dir = try bin_dir.realpathAlloc(allocator, ".");
+        const bin_path = try std.fs.path.join(allocator, &.{ real_bin_dir, &bin_name });
 
         // compile the test binary
-        const cmd = &[_][]const u8{
-            "zig",
-            "test",
-            filename,
-            "--test-no-exec",
-            "--test-filter",
-            unquoted,
-            try std.fmt.allocPrint(allocator, "-femit-bin={s}", .{bin_path}),
-        };
+        std.debug.print("building: {s}\n", .{bin_path});
+        const femit_flag = try std.fmt.allocPrint(allocator, "-femit-bin={s}", .{bin_path});
+        const cmd = &[_][]const u8{ "zig", "test", filename, "--test-no-exec", "--test-filter", name, femit_flag };
         var child = std.process.Child.init(cmd, allocator);
         child.stdout_behavior = .Pipe;
         child.stderr_behavior = .Pipe;
@@ -112,6 +90,29 @@ pub fn main() !void {
     };
 
     try std.json.stringify(launch, .{ .whitespace = .indent_tab, .emit_null_optional_fields = false }, stdout);
+}
+
+// The returned ArrayList contains references to the tree.
+fn findTestNames(allocator: std.mem.Allocator, tree: Ast) !std.ArrayList([]const u8) {
+    var names = std.ArrayList([]const u8).init(allocator);
+    errdefer names.deinit();
+    const tags = tree.nodes.items(.tag);
+    const datas = tree.nodes.items(.data);
+    for (tree.rootDecls()) |index| {
+        if (tags[index] != .test_decl) {
+            continue;
+        }
+        const name = tree.tokenSlice(datas[index].lhs);
+        var unquoted = name;
+        if (std.mem.startsWith(u8, unquoted, "\"")) {
+            unquoted = unquoted[1..];
+        }
+        if (std.mem.endsWith(u8, unquoted, "\"")) {
+            unquoted = unquoted[0 .. unquoted.len - 1];
+        }
+        try names.append(unquoted);
+    }
+    return names;
 }
 
 test "foo" {
